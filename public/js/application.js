@@ -12,10 +12,11 @@ socket.on('chat', function(datos){
 });
 //mostramos los ultimos mensajes al conectarnos
 socket.on('ultimos mensajes', function (datos) {
-	console.log('llega');
+	//console.log('llega');
 		for (var i = 0; i <= datos.length - 1; i++) {
-		  $(".comentarios").append("<div><h5>"+datos[1].user+":</h5><p>"+datos[i].mensaje+"</p></div>");
+		  $(".comentarios").append("<div><h5>"+datos[i].user+":</h5><p>"+datos[i].mensaje+"</p></div>");
 		};
+		$("p").emoticonize();
 })
 socket.on('escribir', function(datos){
 	
@@ -25,18 +26,27 @@ socket.on('escribir', function(datos){
 	
 	
 });
-socket.on('unir', function(datos){
+socket.on('unir', function(datos,users){
 	
 
 	$(".comentarios").append("<p style='color:yellow;'>"+datos+" se ha unido al chat</p>");
+	$("#nickusers").children().remove();
+	for (var i = 0; i <= users.length - 1; i++) {
+		  $("#nickusers").append("<p id='"+users[i]+"' style='color:red;'>"+users[i]+"</p>");
+	};
+	
+	$("p").emoticonize();
 	
 	
 });
-socket.on('borrar usuario', function(datos){
+socket.on('borrar usuario', function(datos,users){
 	
 
 	$(".comentarios").append("<p style='color:yellow;'>"+datos+" se ha desconectado del chat</p>");
-	
+	$("#nickusers").children().remove();
+	for (var i = 0; i <= users.length - 1; i++) {
+		  $("#nickusers").append("<p id='"+users[i]+"' style='color:red;'>"+users[i]+"</p>");
+	};
 	
 });
 socket.on('borrar', function(){
@@ -46,7 +56,7 @@ socket.on('borrar', function(){
 	
 });
 $(document).ready(function(){
-
+	
 		$("#logindiv").css("display", "block");
 		$("#login #cancel").click(function() {
 			$(this).parent().parent().hide();
@@ -65,13 +75,14 @@ $(document).ready(function(){
 		});
 
 	socket.emit('ultimos mensajes');
+	
 	//funcion para detectar si estas escribiendo
 	$("#coment").keydown(function(e){
              
         
 		var usuario= 'iker';
 		if($('#escribir').length == 0){
-			console.log(e);
+			//console.log(e);
 			socket.emit('escribir', {'user':usuario});
 		}
 		
@@ -86,12 +97,12 @@ $(document).ready(function(){
 	$('.formu').on('submit', function(event){
 			event.preventDefault();
 			var mensaje = $('.text').val();
-			var usuario= 'iker';
+			var usuario= $('#username').val();
 			var id='3';
 			var comentario= {'user':usuario, 'mensaje': mensaje, 'id':id};
 			
 			$(".comentarios").append("<div style='color:green;'><h5>"+usuario+":</h5><p>"+mensaje+"</p></div>");
-			
+			$("p").emoticonize();
 			socket.emit('chat', {'user':usuario, 'mensaje': mensaje, 'id':id});
 			
 			
