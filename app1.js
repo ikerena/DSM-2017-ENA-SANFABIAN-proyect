@@ -2,6 +2,8 @@
 var express = require('express');
 var app = express();
 
+var num_users=0;
+var users=[" "];
 
 //var port =process.env.PORT || 8080;
 app.set('view engine','jade');
@@ -92,15 +94,19 @@ io.on('connection', function(client){
 	});
 	//conexion de usuario
 	client.on('unir', function(nombre){
-
+		num_users=num_users+1;
+		users[num_users]=nombre;
 		client.name=nombre;
 		console.log('cliente conectado');
-		io.emit('unir',client.name);
+		console.log(users[num_users]);
+		io.emit('unir',client.name,users);
 	});
 	//desconexion de usuario
 	client.on('disconnect', function(){
-	
-	io.emit('borrar usuario', client.name);
+		num_users=num_users-1;
+		var pos=users.indexOf(client.name);
+		users.splice(pos,1);
+		io.emit('borrar usuario', client.name,users);
 	
 	});
 	
